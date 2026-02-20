@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora de Juros Simples com IRS</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+    }
+    .container {
+        background: white;
+        padding: 20px;
+        max-width: 450px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+    button {
+        background: #0078ff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #005fcc;
+    }
+    .resultado {
+        margin-top: 20px;
+        padding: 10px;
+        background: #e8f4ff;
+        border-left: 4px solid #0078ff;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculadora de Juros Simples (Ano Comercial) com IRS</h2>
+
+    <label>Data de Início:</label>
+    <input type="date" id="dataInicio">
+
+    <label>Data de Fim:</label>
+    <input type="date" id="dataFim">
+
+    <label>Capital (€):</label>
+    <input type="number" id="capital" placeholder="Ex: 1000">
+
+    <label>Taxa de Juros (% ao ano):</label>
+    <input type="number" id="taxa" placeholder="Ex: 5">
+
+    <label>Taxa de IRS (%):</label>
+    <input type="number" id="irs" placeholder="Ex: 28">
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado" class="resultado" style="display:none;"></div>
+</div>
+
+<script>
+function calcular() {
+    const inicio = new Date(document.getElementById("dataInicio").value);
+    const fim = new Date(document.getElementById("dataFim").value);
+    const capital = parseFloat(document.getElementById("capital").value);
+    const taxa = parseFloat(document.getElementById("taxa").value) / 100;
+    const irs = parseFloat(document.getElementById("irs").value) / 100;
+
+    if (isNaN(inicio) || isNaN(fim) || isNaN(capital) || isNaN(taxa) || isNaN(irs)) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+    }
+
+    const diffTime = fim - inicio;
+    const dias = diffTime / (1000 * 60 * 60 * 24);
+
+    if (dias < 0) {
+        alert("A data de fim deve ser posterior à data de início.");
+        return;
+    }
+
+    // Ano comercial (360 dias)
+    const jurosBrutos = capital * taxa * (dias / 360);
+
+    // IRS
+    const valorIRS = jurosBrutos * irs;
+    const jurosLiquidos = jurosBrutos - valorIRS;
+
+    // Montantes finais
+    const montanteBruto = capital + jurosBrutos;
+    const montanteLiquido = capital + jurosLiquidos;
+
+    document.getElementById("resultado").style.display = "block";
+    document.getElementById("resultado").innerHTML = `
+        <strong>Dias decorridos:</strong> ${dias.toFixed(0)}<br>
+        <strong>Juros Brutos:</strong> € ${jurosBrutos.toFixed(2)}<br>
+        <strong>IRS (${(irs*100).toFixed(0)}%):</strong> € ${valorIRS.toFixed(2)}<br>
+        <strong>Juros Líquidos:</strong> € ${jurosLiquidos.toFixed(2)}<br>
+        <strong>Montante Final Bruto:</strong> € ${montanteBruto.toFixed(2)}<br>
+        <strong>Montante Final Líquido:</strong> € ${montanteLiquido.toFixed(2)}
+    `;
+}
+</script>
+
+</body>
+</html>
